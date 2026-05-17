@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AtomQuest — Goal Setting & Tracking Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0c10;
+  --surface: #111318;
+  --surface2: #181c24;
+  --surface3: #1e2330;
+  --border: #252b38;
+  --border2: #2e3545;
+  --text: #e8eaf0;
+  --text2: #9aa0b4;
+  --text3: #5c6480;
+  --accent: #4f8ef7;
+  --accent2: #7c5cfc;
+  --accent3: #00d4aa;
+  --warn: #f7a14f;
+  --danger: #f75f5f;
+  --success: #4fd97a;
+  --gold: #f7c94f;
+  --card-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; font-weight: 700; }
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ---- LOGIN ---- */
+#loginScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(79,142,247,0.15), transparent),
+              radial-gradient(ellipse 60% 60% at 80% 80%, rgba(124,92,252,0.1), transparent),
+              var(--bg);
+}
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 420px;
+  max-width: 95vw;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  animation: fadeUp 0.5s ease;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+.login-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.login-logo .logo-icon {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(79,142,247,0.4);
+}
+.login-logo h1 { font-size: 22px; letter-spacing: -0.5px; }
+.login-logo p { color: var(--text2); font-size: 13px; margin-top: 4px; }
+.role-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.role-tab {
+  padding: 10px 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Syne', sans-serif;
+  color: var(--text2);
+  transition: all 0.2s;
+}
+.role-tab:hover { border-color: var(--accent); color: var(--text); }
+.role-tab.active { background: rgba(79,142,247,0.12); border-color: var(--accent); color: var(--accent); }
+.role-tab .rticon { font-size: 18px; display: block; margin-bottom: 4px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,142,247,0.12);
+}
+.form-group select option { background: var(--surface2); }
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(79,142,247,0.35);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,142,247,0.45); }
+.btn-secondary { background: var(--surface2); border: 1px solid var(--border2); color: var(--text); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-success { background: rgba(79,217,122,0.15); border: 1px solid rgba(79,217,122,0.4); color: var(--success); }
+.btn-success:hover { background: rgba(79,217,122,0.25); }
+.btn-warn { background: rgba(247,161,79,0.15); border: 1px solid rgba(247,161,79,0.4); color: var(--warn); }
+.btn-warn:hover { background: rgba(247,161,79,0.25); }
+.btn-danger { background: rgba(247,95,95,0.15); border: 1px solid rgba(247,95,95,0.4); color: var(--danger); }
+.btn-danger:hover { background: rgba(247,95,95,0.25); }
+.btn-ghost { background: transparent; color: var(--text2); }
+.btn-ghost:hover { color: var(--text); background: var(--surface2); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-full { width: 100%; justify-content: center; padding: 13px; font-size: 15px; }
+.login-demo { margin-top: 16px; text-align: center; }
+.login-demo p { font-size: 12px; color: var(--text3); }
+.login-demo strong { color: var(--text2); }
+
+/* ---- APP SHELL ---- */
+#app { display: none; min-height: 100vh; flex-direction: row; }
+#app.visible { display: flex; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  z-index: 100;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .logomark {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-right: 10px;
+  box-shadow: 0 4px 12px rgba(79,142,247,0.3);
+  vertical-align: middle;
+}
+.sidebar-logo span { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; vertical-align: middle; }
+.sidebar-user {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-user .su-name { font-weight: 600; font-size: 13px; }
+.sidebar-user .su-role {
+  font-size: 11px;
+  color: var(--text2);
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 2px 8px;
+  display: inline-block;
+  margin-top: 4px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+}
+.role-employee .su-role { color: var(--accent3); border-color: rgba(0,212,170,0.3); background: rgba(0,212,170,0.08); }
+.role-manager .su-role { color: var(--accent); border-color: rgba(79,142,247,0.3); background: rgba(79,142,247,0.08); }
+.role-admin .su-role { color: var(--gold); border-color: rgba(247,201,79,0.3); background: rgba(247,201,79,0.08); }
+.sidebar-nav { flex: 1; padding: 12px 8px; }
+.nav-section { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); padding: 8px 10px 4px; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: rgba(79,142,247,0.12); color: var(--accent); }
+.nav-item .ni-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-item .ni-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
+.sidebar-bottom { padding: 12px 8px; border-top: 1px solid var(--border); }
+.quarter-badge {
+  margin: 8px 8px 0;
+  background: rgba(0,212,170,0.08);
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+.quarter-badge .qb-label { color: var(--text3); text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; font-weight: 700; }
+.quarter-badge .qb-period { color: var(--accent3); font-weight: 700; font-size: 13px; font-family: 'Syne', sans-serif; }
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  margin-left: 240px;
+  min-height: 100vh;
+  background: var(--bg);
+}
+.topbar {
+  height: 60px;
+  background: rgba(10,12,16,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar h2 { font-size: 16px; font-weight: 700; flex: 1; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.notification-dot {
+  width: 8px; height: 8px;
+  background: var(--danger);
+  border-radius: 50%;
+  position: absolute;
+  top: -2px; right: -2px;
+}
+.page-content { padding: 24px; }
+
+/* ---- PANELS ---- */
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* ---- CARDS ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+.card-header h3 { font-size: 15px; }
+.card-title { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+/* ---- STAT CARDS ---- */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+@media(max-width:1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.08;
+  transform: translate(20px, -20px);
+}
+.stat-card.blue::before { background: var(--accent); }
+.stat-card.purple::before { background: var(--accent2); }
+.stat-card.green::before { background: var(--accent3); }
+.stat-card.gold::before { background: var(--gold); }
+.stat-card .sc-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 8px; }
+.stat-card .sc-value { font-size: 28px; font-weight: 800; font-family: 'Syne', sans-serif; line-height: 1; }
+.stat-card.blue .sc-value { color: var(--accent); }
+.stat-card.purple .sc-value { color: var(--accent2); }
+.stat-card.green .sc-value { color: var(--accent3); }
+.stat-card.gold .sc-value { color: var(--gold); }
+.stat-card .sc-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+
+/* ---- TABLES ---- */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ---- BADGES ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  white-space: nowrap;
+}
+.badge-pending { background: rgba(247,161,79,0.12); color: var(--warn); border: 1px solid rgba(247,161,79,0.3); }
+.badge-approved { background: rgba(79,217,122,0.12); color: var(--success); border: 1px solid rgba(79,217,122,0.3); }
+.badge-rejected { background: rgba(247,95,95,0.12); color: var(--danger); border: 1px solid rgba(247,95,95,0.3); }
+.badge-draft { background: rgba(92,100,128,0.15); color: var(--text3); border: 1px solid var(--border); }
+.badge-locked { background: rgba(124,92,252,0.12); color: var(--accent2); border: 1px solid rgba(124,92,252,0.3); }
+.badge-ontrack { background: rgba(0,212,170,0.12); color: var(--accent3); border: 1px solid rgba(0,212,170,0.3); }
+.badge-notstarted { background: rgba(92,100,128,0.15); color: var(--text3); border: 1px solid var(--border); }
+.badge-completed { background: rgba(79,217,122,0.12); color: var(--success); border: 1px solid rgba(79,217,122,0.3); }
+.badge-shared { background: rgba(79,142,247,0.12); color: var(--accent); border: 1px solid rgba(79,142,247,0.3); }
+
+/* ---- PROGRESS BAR ---- */
+.progress-wrap { background: var(--surface3); border-radius: 100px; height: 6px; overflow: hidden; }
+.progress-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.5s ease;
+}
+.progress-fill.good { background: linear-gradient(90deg, var(--accent3), #00b89c); }
+.progress-fill.warn { background: linear-gradient(90deg, var(--warn), #e8861e); }
+.progress-fill.danger { background: linear-gradient(90deg, var(--danger), #d43333); }
+
+/* ---- MODAL ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  width: 640px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  animation: fadeUp 0.25s ease;
+}
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+.modal-header h3 { font-size: 16px; }
+.modal-body { padding: 20px 24px; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.close-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 20px; padding: 4px; transition: color 0.2s; }
+.close-btn:hover { color: var(--text); }
+
+/* ---- GRID HELPERS ---- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.flex-row { display: flex; align-items: center; gap: 10px; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-wrap { flex-wrap: wrap; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.text-sm { font-size: 12px; }
+.text-xs { font-size: 11px; }
+.text-muted { color: var(--text2); }
+.text-muted2 { color: var(--text3); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.text-warn { color: var(--warn); }
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.section-title { font-size: 14px; font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-title::after { content:''; flex:1; height:1px; background: var(--border); }
+
+/* ---- GOAL ITEM ---- */
+.goal-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.goal-item:hover { border-color: var(--border2); }
+.goal-item.locked { opacity: 0.85; }
+.goal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.goal-title-text { font-weight: 600; font-size: 14px; }
+.goal-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.goal-meta-item { font-size: 11px; color: var(--text2); background: var(--surface3); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; }
+.weightage-bar { margin-top: 8px; }
+.weightage-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; display: flex; justify-content: space-between; }
+
+/* ---- INLINE EDIT ---- */
+.inline-input {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  width: 100%;
+  outline: none;
+}
+.inline-input:focus { border-color: var(--accent); }
+
+/* ---- ALERT ---- */
+.alert {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.alert-error { background: rgba(247,95,95,0.08); border: 1px solid rgba(247,95,95,0.25); color: #f5a0a0; }
+.alert-success { background: rgba(79,217,122,0.08); border: 1px solid rgba(79,217,122,0.25); color: #8deaa9; }
+.alert-warn { background: rgba(247,161,79,0.08); border: 1px solid rgba(247,161,79,0.25); color: #f5c688; }
+.alert-info { background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.25); color: #8dbdf5; }
+
+/* WEIGHTAGE TOTAL INDICATOR */
+.weightage-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.wt-label { font-size: 12px; color: var(--text3); }
+.wt-value { font-size: 20px; font-weight: 800; font-family: 'Syne', sans-serif; }
+.wt-ok { color: var(--success); }
+.wt-warn { color: var(--warn); }
+.wt-bar { flex: 1; margin: 0 16px; }
+
+/* ---- TIMELINE ---- */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content:''; position:absolute; left:6px; top:0; bottom:0; width:2px; background:var(--border); border-radius:1px; }
+.tl-item { position: relative; margin-bottom: 16px; }
+.tl-item::before { content:''; position:absolute; left:-17px; top:5px; width:10px; height:10px; border-radius:50%; background:var(--surface2); border:2px solid var(--border2); }
+.tl-item.active::before { background:var(--accent); border-color:var(--accent); box-shadow:0 0 8px rgba(79,142,247,0.5); }
+.tl-item.done::before { background:var(--success); border-color:var(--success); }
+.tl-date { font-size: 11px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.tl-text { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+/* ---- TOAST ---- */
+#toastContainer {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 260px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: slideIn 0.25s ease;
+}
+@keyframes slideIn { from { transform: translateX(100%); opacity:0; } to { transform:none; opacity:1; } }
+.toast.out { animation: slideOut 0.3s ease forwards; }
+@keyframes slideOut { to { transform: translateX(100%); opacity:0; } }
+.toast-success { border-left: 3px solid var(--success); }
+.toast-error { border-left: 3px solid var(--danger); }
+.toast-info { border-left: 3px solid var(--accent); }
+.toast-warn { border-left: 3px solid var(--warn); }
+
+/* ---- COMMENT BOX ---- */
+.comment-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.comment-meta { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+.comment-text { font-size: 13px; color: var(--text2); }
+
+/* ---- REPORT / ANALYTICS ---- */
+.chart-bar-wrap { display: flex; flex-direction: column; gap: 8px; }
+.chart-bar-item { display: flex; align-items: center; gap: 12px; }
+.chart-bar-label { font-size: 12px; color: var(--text2); width: 120px; text-align: right; }
+.chart-bar-track { flex: 1; height: 24px; background: var(--surface3); border-radius: 6px; overflow: hidden; }
+.chart-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 700; color: #fff; transition: width 0.8s ease; }
+
+/* SCORE */
+.score-ring {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'Syne', sans-serif;
+  position: relative;
+  flex-shrink: 0;
+}
+.score-ring::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--surface2);
+}
+.score-ring span { position: relative; z-index: 1; }
+
+/* NOTIFICATION PANEL */
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.notif-info .notif-title { font-size: 13px; font-weight: 600; }
+.notif-info .notif-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+/* SEARCH */
+.search-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  width: 200px;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--accent); }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text3);
+}
+.empty-state .es-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state h4 { font-size: 15px; color: var(--text2); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; }
+
+/* CYCLE INDICATOR */
+.cycle-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.cycle-step {
+  flex: 1;
+  height: 4px;
+  background: var(--surface3);
+  border-radius: 2px;
+}
+.cycle-step.done { background: var(--success); }
+.cycle-step.active { background: var(--accent); }
+.cycle-step.pending { background: var(--surface3); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">⚛</div>
+      <h1>AtomQuest</h1>
+      <p>Goal Setting & Tracking Portal</p>
+    </div>
+    <div class="role-tabs">
+      <div class="role-tab active" onclick="selectRole('employee')" id="tab-employee">
+        <span class="rticon">👤</span>Employee
+      </div>
+      <div class="role-tab" onclick="selectRole('manager')" id="tab-manager">
+        <span class="rticon">👔</span>Manager
+      </div>
+      <div class="role-tab" onclick="selectRole('admin')" id="tab-admin">
+        <span class="rticon">🛡</span>Admin / HR
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Select Demo User</label>
+      <select id="demoUserSelect" onchange="autofillLogin()">
+        <option value="">— Select a user —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="user@company.com"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••"/>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">
+      <span>🔑</span> Sign In
+    </button>
+    <div id="loginError" style="display:none;" class="alert alert-error mt-8"></div>
+    <div class="login-demo mt-8">
+      <p>Demo passwords: <strong>pass123</strong> for all users</p>
+      <p style="margin-top:4px;color:var(--text3);font-size:11px;">Hackathon Demo — AtomQuest 1.0</p>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logomark">⚛</span>
+      <span>AtomQuest</span>
+    </div>
+    <div class="sidebar-user" id="sidebarUser"></div>
+    <div class="quarter-badge">
+      <div class="qb-label">Active Period</div>
+      <div class="qb-period" id="activePeriodLabel">Q1 Check-in</div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-bottom">
+      <div class="nav-item" onclick="logout()">
+        <span class="ni-icon">🚪</span> Sign Out
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="topbar">
+      <h2 id="topbarTitle">Dashboard</h2>
+      <div class="topbar-actions">
+        <div style="position:relative;display:inline-block;">
+          <button class="btn btn-secondary btn-sm" onclick="showPanel('notifications')">🔔 Notifications <span id="notifCount" style="background:var(--danger);color:#fff;border-radius:10px;padding:1px 5px;font-size:10px;margin-left:2px;">0</span></button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">⟵ Logout</button>
+      </div>
+    </div>
+    <div class="page-content" id="pageContent">
+      <!-- panels injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONTAINER -->
+<div id="modalContainer"></div>
+<!-- TOAST -->
+<div id="toastContainer"></div>
+
+<script>
+// ============================================================
+// DATA STORE
+// ============================================================
+const USERS = [
+  { id:'emp1', name:'Priya Sharma', email:'priya@company.com', password:'pass123', role:'employee', dept:'Engineering', managerId:'mgr1' },
+  { id:'emp2', name:'Rahul Mehta',  email:'rahul@company.com', password:'pass123', role:'employee', dept:'Engineering', managerId:'mgr1' },
+  { id:'emp3', name:'Ananya Iyer',  email:'ananya@company.com',password:'pass123', role:'employee', dept:'Sales', managerId:'mgr2' },
+  { id:'emp4', name:'Karan Patel',  email:'karan@company.com', password:'pass123', role:'employee', dept:'Sales', managerId:'mgr2' },
+  { id:'mgr1', name:'Sanjay Gupta', email:'sanjay@company.com',password:'pass123', role:'manager', dept:'Engineering', managerId:'admin1' },
+  { id:'mgr2', name:'Deepa Nair',   email:'deepa@company.com', password:'pass123', role:'manager', dept:'Sales', managerId:'admin1' },
+  { id:'admin1',name:'HR Admin',    email:'hr@company.com',    password:'pass123', role:'admin',   dept:'HR', managerId: null },
+];
+
+const THRUST_AREAS = ['Revenue Growth','Customer Satisfaction','Operational Efficiency','Innovation & R&D','Compliance & Governance','People Development','Cost Optimization','Quality Assurance'];
+const UOM_TYPES = ['Numeric (Min - Higher Better)','Numeric (Max - Lower Better)','% (Min - Higher Better)','% (Max - Lower Better)','Timeline','Zero'];
+const QUARTERS = ['Goal Setting','Q1 Check-in','Q2 Check-in','Q3 Check-in','Q4 / Annual'];
+
+// State
+let state = {
+  currentUser: null,
+  activePanel: 'dashboard',
+  goals: [], // {id, employeeId, title, description, thrustArea, uom, target, targetDate, weightage, status, achievements:{q1,q2,q3,q4}, comments:[], isShared, sharedBy, createdAt, approvedAt, approvedBy, lockedAt, isLocked, cycleYear:2025}
+  auditLogs: [],
+  notifications: [],
+  checkins: [], // {id, goalId, quarter, plannedTarget, actualAchievement, status, managerComment, score}
+  cycles: [{ id:'c1', year:2025, activePeriod:'Q1 Check-in', settingOpen:true, q1Open:true, q2Open:false, q3Open:false, q4Open:false }],
+  activeCycle: null,
+};
+
+// Pre-populate demo goals
+function seedData() {
+  if(state.goals.length>0) return;
+  const now = new Date().toISOString();
+  state.goals = [
+    { id:'g1', employeeId:'emp1', title:'Increase API Response Time Optimization', description:'Reduce average API response time by 30%', thrustArea:'Operational Efficiency', uom:'Numeric (Max - Lower Better)', target:200, targetDate:'2025-12-31', weightage:30, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr1', cycleYear:2025,
+      achievements:{ q1:{actual:220,status:'On Track',comments:[]}, q2:{actual:190,status:'On Track',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g2', employeeId:'emp1', title:'Complete Cloud Migration Phase 1', description:'Migrate legacy services to cloud', thrustArea:'Innovation & R&D', uom:'% (Min - Higher Better)', target:80, targetDate:'2025-09-30', weightage:25, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr1', cycleYear:2025,
+      achievements:{ q1:{actual:40,status:'On Track',comments:[]}, q2:{actual:70,status:'On Track',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g3', employeeId:'emp1', title:'Zero Critical Security Incidents', description:'Maintain zero P1 security incidents', thrustArea:'Compliance & Governance', uom:'Zero', target:0, targetDate:'2025-12-31', weightage:20, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr1', cycleYear:2025,
+      achievements:{ q1:{actual:0,status:'Completed',comments:[]}, q2:{actual:0,status:'Completed',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g4', employeeId:'emp1', title:'Team Mentoring Program', description:'Conduct 12 mentoring sessions for juniors', thrustArea:'People Development', uom:'Numeric (Min - Higher Better)', target:12, targetDate:'2025-12-31', weightage:15, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr1', cycleYear:2025,
+      achievements:{ q1:{actual:4,status:'On Track',comments:[]}, q2:{actual:8,status:'On Track',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g5', employeeId:'emp1', title:'Quarterly Cost Report Submissions', description:'Submit 4 quarterly cost analysis reports', thrustArea:'Cost Optimization', uom:'Timeline', target:'2025-12-31', targetDate:'2025-12-31', weightage:10, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr1', cycleYear:2025,
+      achievements:{ q1:{actual:'2025-04-01',status:'Completed',comments:[]}, q2:{actual:'2025-07-05',status:'On Track',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+
+    { id:'g6', employeeId:'emp2', title:'Code Review Coverage', description:'Achieve 90% code review coverage', thrustArea:'Quality Assurance', uom:'% (Min - Higher Better)', target:90, targetDate:'2025-12-31', weightage:40, status:'pending', isLocked:false, isShared:false, createdAt:now, cycleYear:2025,
+      achievements:{ q1:{actual:'',status:'Not Started',comments:[]}, q2:{actual:'',status:'Not Started',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g7', employeeId:'emp2', title:'Bug Resolution TAT', description:'Resolve 95% of P2 bugs within SLA', thrustArea:'Customer Satisfaction', uom:'Numeric (Max - Lower Better)', target:48, targetDate:'2025-12-31', weightage:35, status:'pending', isLocked:false, isShared:false, createdAt:now, cycleYear:2025,
+      achievements:{ q1:{actual:'',status:'Not Started',comments:[]}, q2:{actual:'',status:'Not Started',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g8', employeeId:'emp2', title:'Training Completion', description:'Complete 3 certified courses', thrustArea:'People Development', uom:'Numeric (Min - Higher Better)', target:3, targetDate:'2025-12-31', weightage:25, status:'draft', isLocked:false, isShared:false, createdAt:now, cycleYear:2025,
+      achievements:{ q1:{actual:'',status:'Not Started',comments:[]}, q2:{actual:'',status:'Not Started',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+
+    { id:'g9', employeeId:'emp3', title:'Achieve Revenue Target Q3', description:'Hit $500K quarterly revenue target', thrustArea:'Revenue Growth', uom:'Numeric (Min - Higher Better)', target:500000, targetDate:'2025-09-30', weightage:50, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr2', cycleYear:2025,
+      achievements:{ q1:{actual:320000,status:'On Track',comments:[]}, q2:{actual:460000,status:'On Track',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g10',employeeId:'emp3', title:'Customer NPS Score', description:'Maintain NPS above 75', thrustArea:'Customer Satisfaction', uom:'Numeric (Min - Higher Better)', target:75, targetDate:'2025-12-31', weightage:30, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr2', cycleYear:2025,
+      achievements:{ q1:{actual:72,status:'On Track',comments:[]}, q2:{actual:78,status:'Completed',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+    { id:'g11',employeeId:'emp3', title:'New Client Onboarding', description:'Onboard 10 new enterprise clients', thrustArea:'Revenue Growth', uom:'Numeric (Min - Higher Better)', target:10, targetDate:'2025-12-31', weightage:20, status:'approved', isLocked:true, isShared:false, createdAt:now, approvedAt:now, approvedBy:'mgr2', cycleYear:2025,
+      achievements:{ q1:{actual:4,status:'On Track',comments:[]}, q2:{actual:7,status:'On Track',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} } },
+  ];
+
+  state.auditLogs = [
+    { id:'a1', userId:'mgr1', action:'Approved goals for Priya Sharma', timestamp:now, goalIds:['g1','g2','g3','g4','g5'] },
+    { id:'a2', userId:'mgr2', action:'Approved goals for Ananya Iyer', timestamp:now, goalIds:['g9','g10','g11'] },
+    { id:'a3', userId:'emp1', action:'Submitted Q1 achievements', timestamp:now, goalIds:['g1','g2','g3','g4','g5'] },
+  ];
+
+  state.notifications = [
+    { id:'n1', userId:'mgr1', type:'pending_approval', message:'Rahul Mehta has submitted 2 goals for approval', timestamp:now, read:false },
+    { id:'n2', userId:'emp1', type:'approval', message:'Your goals have been approved by Sanjay Gupta', timestamp:now, read:false },
+    { id:'n3', userId:'mgr1', type:'checkin', message:'Q2 check-in window is now open. Please review team achievements.', timestamp:now, read:false },
+  ];
+}
+
+// ============================================================
+// UTILITY
+// ============================================================
+function uid() { return 'id' + Math.random().toString(36).slice(2,10); }
+function fmtDate(d) { if(!d) return '—'; return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+function getUser(id) { return USERS.find(u=>u.id===id)||null; }
+function currUser() { return state.currentUser; }
+function isEmployee() { return currUser().role==='employee'; }
+function isManager() { return currUser().role==='manager'; }
+function isAdmin() { return currUser().role==='admin'; }
+function getMyGoals() { return state.goals.filter(g=>g.employeeId===currUser().id); }
+function getTeamGoals() { return state.goals.filter(g=>{ const emp=getUser(g.employeeId); return emp&&emp.managerId===currUser().id; }); }
+function myNotifs() { return state.notifications.filter(n=>n.userId===currUser().id); }
+
+function computeScore(goal, quarter) {
+  const ach = goal.achievements[quarter];
+  if(!ach || ach.actual==='' || ach.actual===null || ach.actual===undefined) return null;
+  const uom = goal.uom;
+  const actual = parseFloat(ach.actual);
+  const target = parseFloat(goal.target);
+  let score = null;
+  if(uom.includes('Min - Higher')) { score = Math.min((actual/target)*100, 150); }
+  else if(uom.includes('Max - Lower')) { score = actual<=0 ? 150 : Math.min((target/actual)*100, 150); }
+  else if(uom==='Timeline') {
+    const d = new Date(ach.actual).getTime();
+    const t = new Date(goal.targetDate || goal.target).getTime();
+    score = d <= t ? 100 : Math.max(0, 100 - ((d-t)/(24*3600000)));
+  }
+  else if(uom==='Zero') { score = (actual===0) ? 100 : 0; }
+  return score!==null ? Math.round(score) : null;
+}
+
+function addAuditLog(action, goalIds=[]) {
+  state.auditLogs.unshift({ id:uid(), userId:currUser().id, action, goalIds, timestamp:new Date().toISOString() });
+}
+function addNotif(userId, type, message) {
+  state.notifications.unshift({ id:uid(), userId, type, message, timestamp:new Date().toISOString(), read:false });
+  renderNotifCount();
+}
+
+function toast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  const icons = { info:'ℹ️', success:'✅', error:'❌', warn:'⚠️' };
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(),300); }, 3000);
+}
+
+function renderNotifCount() {
+  const cnt = myNotifs().filter(n=>!n.read).length;
+  const el = document.getElementById('notifCount');
+  if(el) el.textContent = cnt;
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+let selectedRole = 'employee';
+function selectRole(role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+role).classList.add('active');
+  const sel = document.getElementById('demoUserSelect');
+  sel.innerHTML = '<option value="">— Select a user —</option>';
+  USERS.filter(u=>u.role===role).forEach(u=>{
+    const o = document.createElement('option');
+    o.value = u.id;
+    o.textContent = u.name + ' ('+u.email+')';
+    sel.appendChild(o);
+  });
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPassword').value='';
+}
+
+function autofillLogin() {
+  const uid2 = document.getElementById('demoUserSelect').value;
+  if(!uid2) return;
+  const u = getUser(uid2);
+  if(u) { document.getElementById('loginEmail').value=u.email; document.getElementById('loginPassword').value=u.password; }
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display='none';
+  const user = USERS.find(u=>u.email===email&&u.password===pw);
+  if(!user) { errEl.textContent='Invalid credentials. Try pass123 as password.'; errEl.style.display='flex'; return; }
+  state.currentUser = user;
+  seedData();
+  initApp();
+}
+
+function logout() {
+  state.currentUser = null;
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPassword').value='';
+  document.getElementById('loginError').style.display='none';
+}
+
+// ============================================================
+// APP INIT
+// ============================================================
+function initApp() {
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  renderSidebar();
+  state.activeCycle = state.cycles[0];
+  document.getElementById('activePeriodLabel').textContent = state.activeCycle.activePeriod;
+  renderNotifCount();
+  showPanel('dashboard');
+}
+
+function renderSidebar() {
+  const u = currUser();
+  const sidebarUser = document.getElementById('sidebarUser');
+  const roleLabel = {employee:'Employee', manager:'Manager L1', admin:'Admin / HR'};
+  sidebarUser.innerHTML = `<div class="su-name">${u.name}</div><div class="su-role">${roleLabel[u.role]}</div><div class="text-xs text-muted2 mt-8">${u.dept}</div>`;
+  sidebarUser.className = 'sidebar-user role-'+u.role;
+
+  const nav = document.getElementById('sidebarNav');
+  let html = '';
+  if(isEmployee()) {
+    html += `<div class="nav-section">My Work</div>
+    <div class="nav-item" onclick="showPanel('dashboard')" id="nav-dashboard"><span class="ni-icon">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="showPanel('mygoals')" id="nav-mygoals"><span class="ni-icon">🎯</span> My Goals</div>
+    <div class="nav-item" onclick="showPanel('achievements')" id="nav-achievements"><span class="ni-icon">📊</span> Achievements</div>
+    <div class="nav-section">Info</div>
+    <div class="nav-item" onclick="showPanel('timeline')" id="nav-timeline"><span class="ni-icon">📅</span> Cycle Timeline</div>
+    <div class="nav-item" onclick="showPanel('notifications')" id="nav-notifications"><span class="ni-icon">🔔</span> Notifications</div>`;
+  } else if(isManager()) {
+    html += `<div class="nav-section">Overview</div>
+    <div class="nav-item" onclick="showPanel('dashboard')" id="nav-dashboard"><span class="ni-icon">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="showPanel('teamgoals')" id="nav-teamgoals"><span class="ni-icon">👥</span> Team Goals</div>
+    <div class="nav-item" onclick="showPanel('approvals')" id="nav-approvals"><span class="ni-icon">✅</span> Approvals <span class="ni-badge" id="approvalBadge">0</span></div>
+    <div class="nav-item" onclick="showPanel('checkins')" id="nav-checkins"><span class="ni-icon">📝</span> Check-ins</div>
+    <div class="nav-section">Tools</div>
+    <div class="nav-item" onclick="showPanel('reports')" id="nav-reports"><span class="ni-icon">📋</span> Reports</div>
+    <div class="nav-item" onclick="showPanel('notifications')" id="nav-notifications"><span class="ni-icon">🔔</span> Notifications</div>`;
+  } else {
+    html += `<div class="nav-section">Administration</div>
+    <div class="nav-item" onclick="showPanel('dashboard')" id="nav-dashboard"><span class="ni-icon">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="showPanel('allgoals')" id="nav-allgoals"><span class="ni-icon">🎯</span> All Goals</div>
+    <div class="nav-item" onclick="showPanel('cycle')" id="nav-cycle"><span class="ni-icon">⚙️</span> Cycle Config</div>
+    <div class="nav-item" onclick="showPanel('sharedgoals')" id="nav-sharedgoals"><span class="ni-icon">🔗</span> Shared Goals</div>
+    <div class="nav-section">Analytics</div>
+    <div class="nav-item" onclick="showPanel('analytics')" id="nav-analytics"><span class="ni-icon">📈</span> Analytics</div>
+    <div class="nav-item" onclick="showPanel('reports')" id="nav-reports"><span class="ni-icon">📋</span> Reports</div>
+    <div class="nav-item" onclick="showPanel('auditlog')" id="nav-auditlog"><span class="ni-icon">🔍</span> Audit Log</div>
+    <div class="nav-item" onclick="showPanel('notifications')" id="nav-notifications"><span class="ni-icon">🔔</span> Notifications</div>`;
+  }
+  nav.innerHTML = html;
+  updateApprovalBadge();
+}
+
+function updateApprovalBadge() {
+  const b = document.getElementById('approvalBadge');
+  if(!b) return;
+  const cnt = getTeamGoals().filter(g=>g.status==='pending').length;
+  b.textContent = cnt;
+  b.style.display = cnt>0 ? 'inline' : 'none';
+}
+
+function showPanel(panelName) {
+  state.activePanel = panelName;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+panelName);
+  if(navEl) navEl.classList.add('active');
+  const titleMap = {
+    dashboard:'Dashboard', mygoals:'My Goals', achievements:'Achievement Tracking',
+    teamgoals:'Team Goals', approvals:'Goal Approvals', checkins:'Quarterly Check-ins',
+    reports:'Reports & Export', allgoals:'All Goals', cycle:'Cycle Configuration',
+    sharedgoals:'Push Shared Goals', analytics:'Analytics', auditlog:'Audit Log',
+    timeline:'Cycle Timeline', notifications:'Notifications'
+  };
+  document.getElementById('topbarTitle').textContent = titleMap[panelName]||panelName;
+  const pc = document.getElementById('pageContent');
+
+  const renders = {
+    dashboard: renderDashboard,
+    mygoals: renderMyGoals,
+    achievements: renderAchievements,
+    teamgoals: renderTeamGoals,
+    approvals: renderApprovals,
+    checkins: renderCheckins,
+    reports: renderReports,
+    allgoals: renderAllGoals,
+    cycle: renderCycleConfig,
+    sharedgoals: renderSharedGoals,
+    analytics: renderAnalytics,
+    auditlog: renderAuditLog,
+    timeline: renderTimeline,
+    notifications: renderNotifications,
+  };
+  if(renders[panelName]) pc.innerHTML = renders[panelName]();
+  else pc.innerHTML = `<div class="empty-state"><div class="es-icon">🚧</div><h4>${panelName}</h4><p>Coming soon</p></div>`;
+  updateApprovalBadge();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const u = currUser();
+  if(isEmployee()) return renderEmployeeDashboard();
+  if(isManager()) return renderManagerDashboard();
+  return renderAdminDashboard();
+}
+
+function renderEmployeeDashboard() {
+  const goals = getMyGoals();
+  const approved = goals.filter(g=>g.status==='approved').length;
+  const locked = goals.filter(g=>g.isLocked).length;
+  const totalW = goals.reduce((s,g)=>s+(g.weightage||0),0);
+  const avgScore = calcAvgScore(goals, 'q2');
+
+  return `
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="sc-label">Total Goals</div><div class="sc-value">${goals.length}</div><div class="sc-sub">Max 8 allowed</div></div>
+    <div class="stat-card green"><div class="sc-label">Approved</div><div class="sc-value">${approved}</div><div class="sc-sub">Locked & active</div></div>
+    <div class="stat-card gold"><div class="sc-label">Weightage Used</div><div class="sc-value">${totalW}%</div><div class="sc-sub">${totalW===100?'✅ Valid':'⚠️ Must equal 100%'}</div></div>
+    <div class="stat-card purple"><div class="sc-label">Q2 Avg Score</div><div class="sc-value">${avgScore!==null?avgScore+'%':'—'}</div><div class="sc-sub">Progress indicator</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>My Goals Summary</h3><button class="btn btn-primary btn-sm" onclick="showPanel('mygoals')">Manage →</button></div>
+      ${goals.length===0?'<div class="empty-state" style="padding:24px"><div class="es-icon">🎯</div><h4>No goals yet</h4><p>Create your goals to get started</p></div>':
+        goals.map(g=>`
+        <div class="goal-item">
+          <div class="goal-header">
+            <div>
+              <div class="goal-title-text">${g.title}</div>
+              <div class="text-xs text-muted2 mt-8">${g.thrustArea}</div>
+            </div>
+            <span class="badge badge-${g.status==='approved'?(g.isLocked?'locked':'approved'):g.status==='pending'?'pending':'draft'}">${g.status==='approved'&&g.isLocked?'🔒 Locked':g.status}</span>
+          </div>
+          <div class="weightage-bar">
+            <div class="weightage-label"><span>Weightage: ${g.weightage}%</span><span>Q2: ${computeScore(g,'q2')!==null?computeScore(g,'q2')+'%':'No data'}</span></div>
+            <div class="progress-wrap"><div class="progress-fill ${(computeScore(g,'q2')||0)>=80?'good':(computeScore(g,'q2')||0)>=50?'':'warn'}" style="width:${Math.min(computeScore(g,'q2')||0,100)}%"></div></div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-header"><h3>Q2 Achievement Overview</h3></div>
+        <div class="chart-bar-wrap">
+          ${goals.filter(g=>g.isLocked).map(g=>{
+            const s = computeScore(g,'q2');
+            const w = s!==null?Math.min(s,100):0;
+            const col = w>=80?'var(--success)':w>=50?'var(--warn)':'var(--danger)';
+            return `<div class="chart-bar-item">
+              <div class="chart-bar-label">${g.title.length>20?g.title.slice(0,20)+'…':g.title}</div>
+              <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${w}%;background:${col}">${s!==null?s+'%':''}</div></div>
+            </div>`;
+          }).join('') || '<div class="text-muted text-sm">No approved goals</div>'}
+        </div>
+      </div>
+      <div class="card mt-16">
+        <div class="card-header"><h3>⚡ Quick Actions</h3></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-primary" onclick="openAddGoalModal()">➕ Add New Goal</button>
+          <button class="btn btn-secondary" onclick="showPanel('achievements')">📊 Update Achievements</button>
+          <button class="btn btn-secondary" onclick="showPanel('timeline')">📅 View Cycle Timeline</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderManagerDashboard() {
+  const teamGoals = getTeamGoals();
+  const pending = teamGoals.filter(g=>g.status==='pending');
+  const myTeam = USERS.filter(u=>u.managerId===currUser().id);
+  const completedCheckins = myTeam.filter(u=> getMyGoalsFor(u.id).filter(g=>g.isLocked&&g.achievements.q2.actual!=='').length > 0).length;
+
+  return `
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="sc-label">Team Members</div><div class="sc-value">${myTeam.length}</div><div class="sc-sub">Direct reports</div></div>
+    <div class="stat-card gold"><div class="sc-label">Pending Approvals</div><div class="sc-value">${pending.length}</div><div class="sc-sub"><button class="btn btn-ghost btn-sm" onclick="showPanel('approvals')">Review →</button></div></div>
+    <div class="stat-card green"><div class="sc-label">Check-ins Done</div><div class="sc-value">${completedCheckins}/${myTeam.length}</div><div class="sc-sub">Q2 Progress</div></div>
+    <div class="stat-card purple"><div class="sc-label">Total Goals</div><div class="sc-value">${teamGoals.length}</div><div class="sc-sub">Across team</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>Team Overview</h3></div>
+      ${myTeam.map(u=>{
+        const uGoals = getMyGoalsFor(u.id);
+        const app = uGoals.filter(g=>g.status==='approved').length;
+        const pend = uGoals.filter(g=>g.status==='pending').length;
+        const avgS = calcAvgScore(uGoals, 'q2');
+        return `<div class="flex-between" style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-weight:600;font-size:13px;">${u.name}</div>
+            <div class="text-xs text-muted2">${u.dept} · ${uGoals.length} goals</div>
+          </div>
+          <div class="flex-row">
+            ${pend>0?`<span class="badge badge-pending">${pend} pending</span>`:''}
+            ${app>0?`<span class="badge badge-approved">${app} approved</span>`:''}
+            <span class="text-sm" style="color:${avgS&&avgS>=80?'var(--success)':avgS&&avgS>=50?'var(--warn)':'var(--text3)'}">${avgS!==null?avgS+'%':'—'}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div>
+      ${pending.length>0?`<div class="card">
+        <div class="card-header"><h3>⏳ Pending Approvals</h3><button class="btn btn-warn btn-sm" onclick="showPanel('approvals')">Review All</button></div>
+        ${pending.slice(0,3).map(g=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="font-weight:600;font-size:13px;">${g.title}</div>
+          <div class="text-xs text-muted2">${getUser(g.employeeId)?.name} · ${g.weightage}% weightage</div>
+        </div>`).join('')}
+      </div>`:`<div class="card"><div class="empty-state" style="padding:24px"><div class="es-icon">✅</div><h4>No Pending Approvals</h4></div></div>`}
+      <div class="card mt-16">
+        <div class="card-header"><h3>⚡ Quick Actions</h3></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-warn" onclick="showPanel('approvals')">✅ Review Goal Submissions</button>
+          <button class="btn btn-secondary" onclick="showPanel('checkins')">📝 Conduct Q2 Check-ins</button>
+          <button class="btn btn-secondary" onclick="showPanel('reports')">📋 Export Reports</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAdminDashboard() {
+  const allGoals = state.goals;
+  const emp = USERS.filter(u=>u.role==='employee');
+  const approved = allGoals.filter(g=>g.status==='approved').length;
+  const pending = allGoals.filter(g=>g.status==='pending').length;
+  const checkinDone = allGoals.filter(g=>g.isLocked&&g.achievements.q2.actual!=='').length;
+
+  return `
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="sc-label">Total Employees</div><div class="sc-value">${emp.length}</div><div class="sc-sub">Active users</div></div>
+    <div class="stat-card green"><div class="sc-label">Approved Goals</div><div class="sc-value">${approved}</div><div class="sc-sub">Locked & tracking</div></div>
+    <div class="stat-card gold"><div class="sc-label">Pending Review</div><div class="sc-value">${pending}</div><div class="sc-sub">Awaiting manager</div></div>
+    <div class="stat-card purple"><div class="sc-label">Q2 Check-ins</div><div class="sc-value">${checkinDone}</div><div class="sc-sub">Goals with data</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>Completion Dashboard</h3></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Employee</th><th>Dept</th><th>Goals</th><th>Q2 Status</th></tr></thead>
+        <tbody>
+          ${USERS.filter(u=>u.role==='employee').map(u=>{
+            const uGoals = getMyGoalsFor(u.id);
+            const done = uGoals.filter(g=>g.isLocked&&g.achievements.q2.actual!=='').length;
+            const total = uGoals.filter(g=>g.isLocked).length;
+            const pct = total>0?Math.round((done/total)*100):0;
+            return `<tr>
+              <td>${u.name}</td>
+              <td>${u.dept}</td>
+              <td>${uGoals.length}</td>
+              <td>
+                <div class="progress-wrap" style="width:80px;display:inline-block;vertical-align:middle;margin-right:8px"><div class="progress-fill ${pct>=80?'good':pct>=40?'':'warn'}" style="width:${pct}%"></div></div>
+                <span class="text-xs">${pct}%</span>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table></div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-header"><h3>🏢 Org Overview by Dept</h3></div>
+        ${['Engineering','Sales'].map(dept=>{
+          const dGoals = allGoals.filter(g=>{ const u=getUser(g.employeeId); return u&&u.dept===dept; });
+          const app = dGoals.filter(g=>g.status==='approved').length;
+          const pct = dGoals.length>0?Math.round((app/dGoals.length)*100):0;
+          return `<div style="margin-bottom:14px">
+            <div class="flex-between mb-8"><span style="font-weight:600;font-size:13px;">${dept}</span><span class="text-xs text-muted2">${app}/${dGoals.length} approved</span></div>
+            <div class="progress-wrap"><div class="progress-fill good" style="width:${pct}%"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card mt-16">
+        <div class="card-header"><h3>⚡ Admin Actions</h3></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-primary" onclick="showPanel('sharedgoals')">🔗 Push Shared Goals</button>
+          <button class="btn btn-secondary" onclick="showPanel('cycle')">⚙️ Manage Cycle</button>
+          <button class="btn btn-secondary" onclick="showPanel('analytics')">📈 View Analytics</button>
+          <button class="btn btn-secondary" onclick="showPanel('reports')">📋 Export Reports</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function calcAvgScore(goals, quarter) {
+  const locked = goals.filter(g=>g.isLocked);
+  if(!locked.length) return null;
+  let total=0, cnt=0;
+  locked.forEach(g=>{ const s=computeScore(g,quarter); if(s!==null){ total+=s*g.weightage/100; cnt++; } });
+  return cnt>0 ? Math.round(total) : null;
+}
+
+function getMyGoalsFor(userId) { return state.goals.filter(g=>g.employeeId===userId); }
+
+// ============================================================
+// MY GOALS (Employee)
+// ============================================================
+function renderMyGoals() {
+  const goals = getMyGoals();
+  const totalW = goals.reduce((s,g)=>s+(g.weightage||0),0);
+  const wOk = totalW===100;
+  const wPct = Math.min(totalW,100);
+
+  return `
+  <div class="weightage-total">
+    <div>
+      <div class="wt-label">Total Weightage</div>
+      <div class="wt-value ${wOk?'wt-ok':'wt-warn'}">${totalW}%</div>
+    </div>
+    <div class="wt-bar">
+      <div class="progress-wrap" style="height:8px"><div class="progress-fill ${wOk?'good':'warn'}" style="width:${wPct}%"></div></div>
+      <div class="text-xs text-muted2 mt-8">Must equal 100% before submission · Min 10% per goal · Max 8 goals</div>
+    </div>
+    <div class="flex-row">
+      <span class="text-xs text-muted2">${goals.length}/8 goals</span>
+      ${!wOk&&goals.length>0?`<span class="badge badge-pending">⚠️ ${totalW<100?'Add '+(100-totalW)+'% more':'Over by '+(totalW-100)+'%'}</span>`:''}
+    </div>
+  </div>
+  <div class="flex-between mb-16">
+    <h3 style="font-size:16px">My Goal Sheet</h3>
+    <div class="flex-row">
+      ${goals.filter(g=>!g.isLocked&&g.status==='draft').length>0&&wOk?`<button class="btn btn-success" onclick="submitAllGoals()">📤 Submit for Approval</button>`:''}
+      ${goals.length<8&&!goals.some(g=>g.status==='pending'||g.isLocked)?`<button class="btn btn-primary" onclick="openAddGoalModal()">➕ Add Goal</button>`:''}
+      ${goals.some(g=>g.isLocked)?'':goals.length>0?`<button class="btn btn-primary" onclick="openAddGoalModal()">➕ Add Goal</button>`:''}
+    </div>
+  </div>
+  ${goals.length===0?`<div class="empty-state"><div class="es-icon">🎯</div><h4>No Goals Yet</h4><p>Start by adding your first goal. You can have up to 8 goals with total weightage of 100%.</p><button class="btn btn-primary mt-16" onclick="openAddGoalModal()">➕ Add Your First Goal</button></div>`:''}
+  ${goals.map(g=>renderGoalCard(g)).join('')}
+  `;
+}
+
+function renderGoalCard(g, forManager=false) {
+  const locked = g.isLocked;
+  const canEdit = !locked && isEmployee() && (g.status==='draft'||g.status==='rejected');
+  return `<div class="goal-item ${locked?'locked':''}">
+    <div class="goal-header">
+      <div style="flex:1">
+        <div class="goal-title-text">${g.title} ${g.isShared?'<span class="badge badge-shared">🔗 Shared</span>':''}</div>
+        <div class="text-xs text-muted2 mt-8">${g.description}</div>
+      </div>
+      <div class="flex-row" style="flex-shrink:0">
+        <span class="badge badge-${g.status==='approved'?(g.isLocked?'locked':'approved'):g.status==='pending'?'pending':g.status==='rejected'?'rejected':'draft'}">
+          ${g.status==='approved'&&g.isLocked?'🔒 Locked':g.status==='approved'?'✅ Approved':g.status==='pending'?'⏳ Pending':g.status==='rejected'?'❌ Returned':'📝 Draft'}
+        </span>
+        ${canEdit?`<button class="btn btn-ghost btn-sm" onclick="openEditGoalModal('${g.id}')">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteGoal('${g.id}')">🗑</button>`:''}
+        ${isAdmin()&&locked?`<button class="btn btn-warn btn-sm" onclick="adminUnlockGoal('${g.id}')">🔓 Unlock</button>`:''}
+      </div>
+    </div>
+    <div class="goal-meta">
+      <span class="goal-meta-item">📁 ${g.thrustArea}</span>
+      <span class="goal-meta-item">📏 ${g.uom}</span>
+      <span class="goal-meta-item">🎯 Target: ${g.uom==='Timeline'?fmtDate(g.target):g.target}</span>
+      <span class="goal-meta-item">⚖️ ${g.weightage}%</span>
+      ${g.status==='approved'?`<span class="goal-meta-item">✅ Approved by ${getUser(g.approvedBy)?.name||'Manager'}</span>`:''}
+    </div>
+    ${locked?`<div class="weightage-bar">
+      <div class="weightage-label"><span>Q2 Progress</span><span style="font-weight:700">${computeScore(g,'q2')!==null?computeScore(g,'q2')+'%':'No data'}</span></div>
+      <div class="progress-wrap"><div class="progress-fill ${(computeScore(g,'q2')||0)>=80?'good':(computeScore(g,'q2')||0)>=50?'':'warn'}" style="width:${Math.min(computeScore(g,'q2')||0,100)}%"></div></div>
+    </div>`:''}
+    ${g.status==='rejected'&&g.rejectionNote?`<div class="alert alert-error mt-8">❌ Returned by manager: ${g.rejectionNote}</div>`:''}
+  </div>`;
+}
+
+function submitAllGoals() {
+  const goals = getMyGoals().filter(g=>g.status==='draft'||g.status==='rejected');
+  const totalW = getMyGoals().reduce((s,g)=>s+(g.weightage||0),0);
+  if(totalW!==100) { toast('Total weightage must equal 100%','error'); return; }
+  goals.forEach(g=>{ g.status='pending'; g.submittedAt=new Date().toISOString(); });
+  addAuditLog('Employee submitted goals for approval', goals.map(g=>g.id));
+  const mgr = getUser(currUser().managerId);
+  if(mgr) addNotif(mgr.id, 'pending_approval', `${currUser().name} has submitted ${goals.length} goal(s) for approval`);
+  toast('Goals submitted for manager approval!','success');
+  showPanel('mygoals');
+}
+
+function deleteGoal(goalId) {
+  const idx = state.goals.findIndex(g=>g.id===goalId);
+  if(idx<0) return;
+  if(state.goals[idx].isLocked) { toast('Cannot delete a locked goal','error'); return; }
+  state.goals.splice(idx,1);
+  toast('Goal deleted','info');
+  showPanel('mygoals');
+}
+
+function adminUnlockGoal(goalId) {
+  const g = state.goals.find(g=>g.id===goalId);
+  if(!g) return;
+  g.isLocked = false;
+  g.status = 'approved';
+  addAuditLog(`Admin unlocked goal: ${g.title}`, [goalId]);
+  toast('Goal unlocked by Admin','warn');
+  showPanel('allgoals');
+}
+
+// ============================================================
+// ADD / EDIT GOAL MODAL
+// ============================================================
+function openAddGoalModal(prefill={}) {
+  const goals = getMyGoals();
+  if(goals.length>=8) { toast('Maximum 8 goals allowed','error'); return; }
+  const mc = document.getElementById('modalContainer');
+  mc.innerHTML = `
+  <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>➕ Add New Goal</h3>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="goalFormError"></div>
+        <div class="form-group">
+          <label>Thrust Area *</label>
+          <select id="gf_thrust">
+            ${THRUST_AREAS.map(t=>`<option value="${t}" ${prefill.thrustArea===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Goal Title *</label>
+          <input type="text" id="gf_title" placeholder="Clear, measurable goal title" value="${prefill.title||''}"/>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="gf_desc" rows="2" placeholder="Brief description of this goal...">${prefill.description||''}</textarea>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Unit of Measurement (UoM) *</label>
+            <select id="gf_uom" onchange="toggleTargetField()">
+              ${UOM_TYPES.map(u=>`<option value="${u}" ${prefill.uom===u?'selected':''}>${u}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group" id="gf_target_group">
+            <label>Target *</label>
+            <input type="text" id="gf_target" placeholder="e.g. 100, 95%, 2025-12-31" value="${prefill.target||''}"/>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Weightage (%) * <span class="text-xs text-muted2">Min 10%, remaining: ${100-getMyGoals().reduce((s,g)=>s+(g.weightage||0),0)}%</span></label>
+            <input type="number" id="gf_weight" min="10" max="100" placeholder="10-100" value="${prefill.weightage||''}"/>
+          </div>
+          <div class="form-group">
+            <label>Target / Deadline Date</label>
+            <input type="date" id="gf_date" value="${prefill.targetDate||'2025-12-31'}"/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveGoal()">💾 Save Goal</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openEditGoalModal(goalId) {
+  const g = state.goals.find(g=>g.id===goalId);
+  if(!g) return;
+  if(g.isLocked) { toast('Goal is locked','error'); return; }
+  const mc = document.getElementById('modalContainer');
+  mc.innerHTML = `
+  <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>✏️ Edit Goal</h3>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="goalFormError"></div>
+        <div class="form-group">
+          <label>Thrust Area *</label>
+          <select id="gf_thrust">
+            ${THRUST_AREAS.map(t=>`<option value="${t}" ${g.thrustArea===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Goal Title *</label>
+          <input type="text" id="gf_title" value="${g.title}" ${g.isShared?'readonly':''}/>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="gf_desc" rows="2">${g.description||''}</textarea>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Unit of Measurement *</label>
+            <select id="gf_uom" ${g.isShared?'disabled':''}>
+              ${UOM_TYPES.map(u=>`<option value="${u}" ${g.uom===u?'selected':''}>${u}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Target *</label>
+            <input type="text" id="gf_target" value="${g.target}" ${g.isShared?'readonly':''}/>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Weightage (%) *</label>
+            <input type="number" id="gf_weight" min="10" max="100" value="${g.weightage}"/>
+          </div>
+          <div class="form-group">
+            <label>Target Date</label>
+            <input type="date" id="gf_date" value="${g.targetDate||'2025-12-31'}"/>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveGoal('${goalId}')">💾 Update Goal</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveGoal(editId=null) {
+  const thrust = document.getElementById('gf_thrust').value;
+  const title = document.getElementById('gf_title').value.trim();
+  const desc = document.getElementById('gf_desc').value.trim();
+  const uom = document.getElementById('gf_uom').value;
+  const target = document.getElementById('gf_target').value.trim();
+  const weight = parseInt(document.getElementById('gf_weight').value)||0;
+  const date = document.getElementById('gf_date').value;
+  const errEl = document.getElementById('goalFormError');
+
+  if(!title) { errEl.innerHTML='<div class="alert alert-error">Goal title is required</div>'; return; }
+  if(!target) { errEl.innerHTML='<div class="alert alert-error">Target is required</div>'; return; }
+  if(weight<10) { errEl.innerHTML='<div class="alert alert-error">Minimum weightage per goal is 10%</div>'; return; }
+
+  const allGoals = getMyGoals().filter(g=>g.id!==editId);
+  const usedW = allGoals.reduce((s,g)=>s+(g.weightage||0),0);
+  if(usedW+weight>100) { errEl.innerHTML=`<div class="alert alert-error">Total weightage would exceed 100% (currently ${usedW}% + ${weight}% = ${usedW+weight}%)</div>`; return; }
+
+  if(editId) {
+    const g = state.goals.find(g=>g.id===editId);
+    if(g) {
+      g.title=title; g.description=desc; g.thrustArea=thrust; g.uom=uom; g.target=target; g.targetDate=date; g.weightage=weight;
+      addAuditLog(`Edited goal: ${title}`, [editId]);
+      toast('Goal updated','success');
+    }
+  } else {
+    const newG = {
+      id:uid(), employeeId:currUser().id, title, description:desc, thrustArea:thrust, uom, target, targetDate:date, weightage:weight,
+      status:'draft', isLocked:false, isShared:false, createdAt:new Date().toISOString(), cycleYear:2025,
+      achievements:{ q1:{actual:'',status:'Not Started',comments:[]}, q2:{actual:'',status:'Not Started',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} }
+    };
+    state.goals.push(newG);
+    addAuditLog(`Created goal: ${title}`, [newG.id]);
+    toast('Goal added','success');
+  }
+  closeModal();
+  showPanel('mygoals');
+}
+
+// ============================================================
+// ACHIEVEMENTS (Employee)
+// ============================================================
+function renderAchievements() {
+  const goals = getMyGoals().filter(g=>g.isLocked);
+  const quarter = state.activeCycle.activePeriod.toLowerCase().replace(' check-in','').replace(' / annual','').replace('goal setting','q1').trim();
+  const activeQ = quarter==='q4'?'q4':quarter==='q3'?'q3':quarter==='q2'?'q2':'q1';
+
+  return `
+  <div class="alert alert-info mb-16">📅 Active Period: <strong>${state.activeCycle.activePeriod}</strong> — Log your achievements for this quarter</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    ${['q1','q2','q3','q4'].map(q=>`<button class="btn ${activeQ===q?'btn-primary':'btn-secondary'} btn-sm" onclick="setActiveQuarter('${q}',this)">${q.toUpperCase()}</button>`).join('')}
+  </div>
+  <div id="achievementGoals">
+    ${goals.length===0?`<div class="empty-state"><div class="es-icon">📊</div><h4>No Approved Goals</h4><p>Get your goals approved first</p></div>`:''}
+    ${goals.map(g=>renderAchievementRow(g, activeQ)).join('')}
+  </div>`;
+}
+
+function setActiveQuarter(q, btn) {
+  document.querySelectorAll('#achievementGoals').forEach(el=>el.innerHTML='');
+  document.querySelectorAll('.btn-primary.btn-sm').forEach(b=>{ if(['q1','q2','q3','q4'].some(qq=>b.onclick?.toString().includes(qq))) b.classList.remove('btn-primary'); });
+  const goals = getMyGoals().filter(g=>g.isLocked);
+  const el = document.getElementById('achievementGoals');
+  if(el) el.innerHTML = goals.map(g=>renderAchievementRow(g, q)).join('');
+}
+
+function renderAchievementRow(g, quarter) {
+  const ach = g.achievements[quarter];
+  const score = computeScore(g, quarter);
+  const isTimeline = g.uom==='Timeline';
+  const isZero = g.uom==='Zero';
+
+  return `<div class="card">
+    <div class="card-header">
+      <div><h3 style="font-size:14px">${g.title}</h3><div class="text-xs text-muted2">${g.thrustArea} · ${g.uom} · Target: ${isTimeline?fmtDate(g.target):g.target} · Weightage: ${g.weightage}%</div></div>
+      ${score!==null?`<div class="score-ring" style="background:conic-gradient(${score>=80?'var(--success)':score>=50?'var(--warn)':'var(--danger)'} ${score*3.6}deg, var(--surface3) 0deg)"><span>${score}%</span></div>`:''}
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>${quarter.toUpperCase()} Actual Achievement</label>
+        ${isTimeline?`<input type="date" value="${ach.actual||''}" onchange="updateAchievement('${g.id}','${quarter}','actual',this.value)"/>`
+          :`<input type="${isZero?'number':'number'}" step="any" placeholder="${isZero?'0 = success':'Enter actual value'}" value="${ach.actual}" onchange="updateAchievement('${g.id}','${quarter}','actual',this.value)"/>`}
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select onchange="updateAchievement('${g.id}','${quarter}','status',this.value)">
+          <option ${ach.status==='Not Started'?'selected':''}>Not Started</option>
+          <option ${ach.status==='On Track'?'selected':''}>On Track</option>
+          <option ${ach.status==='Completed'?'selected':''}>Completed</option>
+        </select>
+      </div>
+    </div>
+    ${score!==null?`<div class="weightage-bar"><div class="weightage-label"><span>Progress Score</span><span style="color:${score>=80?'var(--success)':score>=50?'var(--warn)':'var(--danger)'}; font-weight:700">${score}%</span></div><div class="progress-wrap"><div class="progress-fill ${score>=80?'good':score>=50?'':'warn'}" style="width:${Math.min(score,100)}%"></div></div></div>`:''}
+    <div class="form-group mt-8"><button class="btn btn-success btn-sm" onclick="saveAchievement('${g.id}','${quarter}')">💾 Save Achievement</button></div>
+  </div>`;
+}
+
+let tempAchievements = {};
+function updateAchievement(goalId, quarter, field, value) {
+  const key = goalId+'_'+quarter;
+  if(!tempAchievements[key]) tempAchievements[key] = {};
+  tempAchievements[key][field] = value;
+}
+
+function saveAchievement(goalId, quarter) {
+  const g = state.goals.find(g=>g.id===goalId);
+  if(!g) return;
+  const key = goalId+'_'+quarter;
+  const temp = tempAchievements[key]||{};
+
+  // Read directly from DOM
+  const parent = document.querySelector(`[data-goal-id="${goalId}"]`) || document.getElementById('achievementGoals');
+  const cards = document.getElementById('achievementGoals').querySelectorAll('.card');
+  let found = false;
+  cards.forEach(card=>{
+    if(card.innerHTML.includes(goalId)) {
+      const inputs = card.querySelectorAll('input,select');
+      if(inputs[0]) g.achievements[quarter].actual = inputs[0].value;
+      if(inputs[1]) g.achievements[quarter].status = inputs[1].value;
+      found = true;
+    }
+  });
+  if(!found) {
+    if(temp.actual!==undefined) g.achievements[quarter].actual = temp.actual;
+    if(temp.status!==undefined) g.achievements[quarter].status = temp.status;
+  }
+
+  // Re-read from all inputs in the card
+  const allCards = document.querySelectorAll('#achievementGoals .card');
+  allCards.forEach(card=>{
+    if(card.querySelector('h3')&&card.querySelector('h3').textContent.includes(g.title.slice(0,20))) {
+      const inp = card.querySelectorAll('input');
+      const sel = card.querySelectorAll('select');
+      if(inp[0]&&inp[0].value!=='') g.achievements[quarter].actual = inp[0].value;
+      if(sel[0]) g.achievements[quarter].status = sel[0].value;
+    }
+  });
+
+  addAuditLog(`${quarter.toUpperCase()} achievement updated for goal: ${g.title}`, [goalId]);
+  toast(`${quarter.toUpperCase()} achievement saved!`, 'success');
+  showPanel('achievements');
+}
+
+// ============================================================
+// APPROVALS (Manager)
+// ============================================================
+function renderApprovals() {
+  const teamGoals = getTeamGoals();
+  const pending = teamGoals.filter(g=>g.status==='pending');
+  const employees = [...new Set(pending.map(g=>g.employeeId))];
+
+  if(pending.length===0) return `<div class="empty-state"><div class="es-icon">✅</div><h4>All Clear!</h4><p>No pending goal approvals from your team</p></div>`;
+
+  return `
+  <div class="alert alert-warn mb-16">⏳ ${pending.length} goal(s) from ${employees.length} employee(s) awaiting your review and approval</div>
+  ${employees.map(empId=>{
+    const emp = getUser(empId);
+    const empGoals = pending.filter(g=>g.employeeId===empId);
+    const totalW = empGoals.reduce((s,g)=>s+(g.weightage||0),0);
+    return `<div class="card">
+      <div class="card-header">
+        <div><h3>${emp?.name}</h3><div class="text-xs text-muted2">${emp?.dept} · ${empGoals.length} goals submitted · Total weightage: ${totalW}%</div></div>
+        <div class="flex-row">
+          <button class="btn btn-success btn-sm" onclick="approveAllFor('${empId}')">✅ Approve All</button>
+          <button class="btn btn-danger btn-sm" onclick="openReturnModal('${empId}')">↩ Return for Rework</button>
+        </div>
+      </div>
+      ${empGoals.map(g=>`<div class="goal-item" id="approval-${g.id}">
+        <div class="goal-header">
+          <div style="flex:1">
+            <div class="goal-title-text">${g.title}</div>
+            <div class="text-xs text-muted2">${g.description}</div>
+          </div>
+          <div class="flex-row" style="flex-shrink:0">
+            <button class="btn btn-success btn-sm" onclick="approveGoal('${g.id}')">✅ Approve</button>
+            <button class="btn btn-warn btn-sm" onclick="openReturnSingleModal('${g.id}')">↩ Return</button>
+          </div>
+        </div>
+        <div class="goal-meta">
+          <span class="goal-meta-item">📁 ${g.thrustArea}</span>
+          <span class="goal-meta-item">📏 ${g.uom}</span>
+          <span class="goal-meta-item">🎯 Target: ${g.uom==='Timeline'?fmtDate(g.target):g.target}</span>
+          <span class="goal-meta-item">⚖️ ${g.weightage}%</span>
+        </div>
+        <div class="grid-2 mt-8">
+          <div class="form-group">
+            <label>Edit Target (inline)</label>
+            <input type="text" class="inline-input" value="${g.target}" onchange="inlineEditGoal('${g.id}','target',this.value)"/>
+          </div>
+          <div class="form-group">
+            <label>Edit Weightage %</label>
+            <input type="number" class="inline-input" value="${g.weightage}" min="10" max="100" onchange="inlineEditGoal('${g.id}','weightage',parseInt(this.value))"/>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('')}`;
+}
+
+function inlineEditGoal(goalId, field, value) {
+  const g = state.goals.find(g=>g.id===goalId);
+  if(g) { g[field]=value; addAuditLog(`Manager edited ${field} for goal: ${g.title}`, [goalId]); }
+}
+
+function approveGoal(goalId) {
+  const g = state.goals.find(g=>g.id===goalId);
+  if(!g) return;
+  g.status='approved'; g.isLocked=true; g.approvedAt=new Date().toISOString(); g.approvedBy=currUser().id;
+  addAuditLog(`Approved and locked goal: ${g.title}`, [goalId]);
+  addNotif(g.employeeId, 'approval', `Your goal "${g.title}" has been approved by ${currUser().name}`);
+  toast('Goal approved and locked','success');
+  showPanel('approvals');
+}
+
+function approveAllFor(empId) {
+  const goals = getTeamGoals().filter(g=>g.employeeId===empId&&g.status==='pending');
+  // Validate total weightage
+  const allEmpGoals = state.goals.filter(g=>g.employeeId===empId);
+  const totalW = allEmpGoals.reduce((s,g)=>s+(g.weightage||0),0);
+  if(totalW!==100) { toast(`Total weightage for ${getUser(empId)?.name} is ${totalW}% — must be 100%`,'error'); return; }
+  goals.forEach(g=>{ g.status='approved'; g.isLocked=true; g.approvedAt=new Date().toISOString(); g.approvedBy=currUser().id; });
+  addAuditLog(`Approved all goals for ${getUser(empId)?.name}`, goals.map(g=>g.id));
+  addNotif(empId, 'approval', `All your goals have been approved by ${currUser().name}`);
+  toast(`All goals for ${getUser(empId)?.name} approved and locked`,'success');
+  showPanel('approvals');
+}
+
+function openReturnModal(empId) {
+  const mc = document.getElementById('modalContainer');
+  mc.innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-header"><h3>↩ Return Goals for Rework</h3><button class="close-btn" onclick="closeModal()">✕</button></div>
+      <div class="modal-body">
+        <div class="alert alert-warn mb-16">All pending goals for this employee will be returned for rework.</div>
+        <div class="form-group"><label>Reason for Return *</label><textarea id="returnNote" rows="3" placeholder="Explain what needs to be changed..."></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="returnAllFor('${empId}')">↩ Return All</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function returnAllFor(empId) {
+  const note = document.getElementById('returnNote').value.trim();
+  if(!note) { toast('Please provide a reason','error'); return; }
+  const goals = getTeamGoals().filter(g=>g.employeeId===empId&&g.status==='pending');
+  goals.forEach(g=>{ g.status='rejected'; g.rejectionNote=note; });
+  addAuditLog(`Returned goals for rework: ${getUser(empId)?.name} — ${note}`, goals.map(g=>g.id));
+  addNotif(empId,'rejection',`Your goals have been returned by ${currUser().name}: ${note}`);
+  toast('Goals returned for rework','warn');
+  closeModal();
+  showPanel('approvals');
+}
+
+function openReturnSingleModal(goalId) {
+  const mc = document.getElementById('modalContainer');
+  mc.innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-header"><h3>↩ Return Goal</h3><button class="close-btn" onclick="closeModal()">✕</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label>Feedback *</label><textarea id="returnNote" rows="3" placeholder="What needs to change?"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="returnSingleGoal('${goalId}')">↩ Return</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function returnSingleGoal(goalId) {
+  const note = document.getElementById('returnNote').value.trim();
+  if(!note) { toast('Reason required','error'); return; }
+  const g = state.goals.find(g=>g.id===goalId);
+  if(g) { g.status='rejected'; g.rejectionNote=note; addAuditLog(`Returned goal: ${g.title} — ${note}`,[goalId]); addNotif(g.employeeId,'rejection',`Goal "${g.title}" returned: ${note}`); }
+  toast('Goal returned','warn'); closeModal(); showPanel('approvals');
+}
+
+// ============================================================
+// TEAM GOALS (Manager)
+// ============================================================
+function renderTeamGoals() {
+  const goals = getTeamGoals();
+  const byEmp = {};
+  goals.forEach(g=>{ if(!byEmp[g.employeeId]) byEmp[g.employeeId]=[]; byEmp[g.employeeId].push(g); });
+
+  return `
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat-card blue"><div class="sc-label">Total Team Goals</div><div class="sc-value">${goals.length}</div></div>
+    <div class="stat-card green"><div class="sc-label">Approved</div><div class="sc-value">${goals.filter(g=>g.isLocked).length}</div></div>
+    <div class="stat-card gold"><div class="sc-label">Pending</div><div class="sc-value">${goals.filter(g=>g.status==='pending').length}</div></div>
+  </div>
+  ${Object.entries(byEmp).map(([empId, empGoals])=>{
+    const emp = getUser(empId);
+    const avgS = calcAvgScore(empGoals, 'q2');
+    return `<div class="card">
+      <div class="card-header">
+        <div><h3>${emp?.name}</h3><div class="text-xs text-muted2">${emp?.dept} · ${empGoals.length} goals · Q2 Avg: ${avgS!==null?avgS+'%':'—'}</div></div>
+        <div class="flex-row">
+          <span class="badge ${avgS&&avgS>=80?'badge-approved':avgS&&avgS>=50?'badge-ontrack':'badge-pending'}">${avgS!==null?avgS+'%':'No Data'}</span>
+        </div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Goal</th><th>UoM</th><th>Target</th><th>Wt%</th><th>Status</th><th>Q2 Score</th></tr></thead>
+        <tbody>
+          ${empGoals.map(g=>`<tr>
+            <td><div style="font-weight:600">${g.title}</div><div class="text-xs text-muted2">${g.thrustArea}</div></td>
+            <td class="text-xs">${g.uom.split('(')[0]}</td>
+            <td>${g.uom==='Timeline'?fmtDate(g.target):g.target}</td>
+            <td>${g.weightage}%</td>
+            <td><span class="badge badge-${g.isLocked?'locked':g.status==='pending'?'pending':'draft'}">${g.isLocked?'Locked':g.status}</span></td>
+            <td style="font-weight:700;color:${(computeScore(g,'q2')||0)>=80?'var(--success)':(computeScore(g,'q2')||0)>=50?'var(--warn)':'var(--text3)'}">${computeScore(g,'q2')!==null?computeScore(g,'q2')+'%':'—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="es-icon">👥</div><h4>No Team Goals</h4></div>'}`;
+}
+
+// ============================================================
+// CHECK-INS (Manager)
+// ============================================================
+function renderCheckins() {
+  const teamGoals = getTeamGoals().filter(g=>g.isLocked);
+  const employees = [...new Set(teamGoals.map(g=>g.employeeId))];
+
+  return `
+  <div class="alert alert-info mb-16">📝 Q2 Check-in Window is Open. Review each team member's achievements and add your check-in comments.</div>
+  ${employees.map(empId=>{
+    const emp = getUser(empId);
+    const empGoals = teamGoals.filter(g=>g.employeeId===empId);
+    return `<div class="card">
+      <div class="card-header"><h3>${emp?.name} — Q2 Check-in</h3><span class="badge badge-${empGoals.some(g=>g.achievements.q2.managerComment)?'approved':'pending'}">${empGoals.some(g=>g.achievements.q2.managerComment)?'Check-in Done':'Pending'}</span></div>
+      <div class="table-wrap mb-16"><table>
+        <thead><tr><th>Goal</th><th>Target</th><th>Q2 Actual</th><th>Status</th><th>Score</th></tr></thead>
+        <tbody>
+          ${empGoals.map(g=>`<tr>
+            <td><div style="font-weight:600;font-size:13px">${g.title}</div></td>
+            <td>${g.uom==='Timeline'?fmtDate(g.target):g.target}</td>
+            <td style="font-weight:600;color:var(--accent3)">${g.achievements.q2.actual||'—'}</td>
+            <td><span class="badge badge-${g.achievements.q2.status==='Completed'?'completed':g.achievements.q2.status==='On Track'?'ontrack':'notstarted'}">${g.achievements.q2.status||'Not Started'}</span></td>
+            <td style="font-weight:700;color:${(computeScore(g,'q2')||0)>=80?'var(--success)':(computeScore(g,'q2')||0)>=50?'var(--warn)':'var(--danger)'}">${computeScore(g,'q2')!==null?computeScore(g,'q2')+'%':'—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+      <div class="form-group">
+        <label>Manager Check-in Comment *</label>
+        <textarea id="checkin_${empId}" rows="3" placeholder="Document your discussion, observations, and guidance...">${empGoals[0]?.achievements.q2.managerComment||''}</textarea>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveCheckinComment('${empId}')">💾 Save Check-in Comment</button>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="es-icon">📝</div><h4>No Approved Goals to Review</h4></div>'}`;
+}
+
+function saveCheckinComment(empId) {
+  const comment = document.getElementById('checkin_'+empId).value.trim();
+  if(!comment) { toast('Please enter a check-in comment','error'); return; }
+  const empGoals = getTeamGoals().filter(g=>g.employeeId===empId&&g.isLocked);
+  empGoals.forEach(g=>{ g.achievements.q2.managerComment = comment; });
+  addAuditLog(`Q2 check-in completed for ${getUser(empId)?.name}`, empGoals.map(g=>g.id));
+  addNotif(empId,'checkin',`${currUser().name} has completed your Q2 check-in`);
+  toast('Check-in comment saved','success');
+}
+
+// ============================================================
+// ALL GOALS (Admin)
+// ============================================================
+function renderAllGoals() {
+  const goals = state.goals;
+  return `
+  <div class="flex-between mb-16">
+    <h3>All Goals (${goals.length})</h3>
+    <div class="flex-row">
+      <input class="search-input" placeholder="Search goals…" oninput="filterGoalsTable(this.value)"/>
+      <select class="search-input" style="width:auto" onchange="filterGoalsByStatus(this.value)">
+        <option value="">All Status</option>
+        <option>approved</option><option>pending</option><option>draft</option><option>rejected</option>
+      </select>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table id="allGoalsTable">
+      <thead><tr><th>Employee</th><th>Dept</th><th>Goal Title</th><th>Thrust Area</th><th>UoM</th><th>Target</th><th>Wt%</th><th>Status</th><th>Q2 Score</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${goals.map(g=>{
+          const emp = getUser(g.employeeId);
+          return `<tr data-status="${g.status}" data-search="${(g.title+emp?.name+g.thrustArea).toLowerCase()}">
+            <td><div style="font-weight:600">${emp?.name}</div></td>
+            <td class="text-xs">${emp?.dept}</td>
+            <td>${g.title} ${g.isShared?'<span class="badge badge-shared" style="font-size:9px">Shared</span>':''}</td>
+            <td class="text-xs">${g.thrustArea}</td>
+            <td class="text-xs">${g.uom.split('(')[0]}</td>
+            <td>${g.uom==='Timeline'?fmtDate(g.target):g.target}</td>
+            <td>${g.weightage}%</td>
+            <td><span class="badge badge-${g.isLocked?'locked':g.status==='pending'?'pending':g.status==='approved'?'approved':g.status==='rejected'?'rejected':'draft'}">${g.isLocked?'Locked':g.status}</span></td>
+            <td style="font-weight:700;color:${(computeScore(g,'q2')||0)>=80?'var(--success)':(computeScore(g,'q2')||0)>=50?'var(--warn)':'var(--text3)'}">${computeScore(g,'q2')!==null?computeScore(g,'q2')+'%':'—'}</td>
+            <td>${g.isLocked?`<button class="btn btn-warn btn-sm" onclick="adminUnlockGoal('${g.id}')">🔓 Unlock</button>`:'—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function filterGoalsTable(val) {
+  document.querySelectorAll('#allGoalsTable tbody tr').forEach(r=>{
+    r.style.display = (r.dataset.search||'').includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+function filterGoalsByStatus(val) {
+  document.querySelectorAll('#allGoalsTable tbody tr').forEach(r=>{
+    r.style.display = (!val || r.dataset.status===val) ? '' : 'none';
+  });
+}
+
+// ============================================================
+// SHARED GOALS (Admin)
+// ============================================================
+function renderSharedGoals() {
+  return `
+  <div class="alert alert-info mb-16">🔗 Push a departmental KPI to multiple employees. They can adjust weightage only — title and target are read-only.</div>
+  <div class="card">
+    <div class="card-header"><h3>Push Shared Goal</h3></div>
+    <div class="form-group">
+      <label>Goal Title *</label>
+      <input type="text" id="sg_title" placeholder="Departmental KPI title"/>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Thrust Area</label>
+        <select id="sg_thrust">${THRUST_AREAS.map(t=>`<option>${t}</option>`).join('')}</select>
+      </div>
+      <div class="form-group"><label>UoM</label>
+        <select id="sg_uom">${UOM_TYPES.map(u=>`<option>${u}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Target *</label><input type="text" id="sg_target" placeholder="e.g. 95"/></div>
+      <div class="form-group"><label>Default Weightage %</label><input type="number" id="sg_weight" value="20" min="10" max="50"/></div>
+    </div>
+    <div class="form-group">
+      <label>Push To Employees</label>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+        ${USERS.filter(u=>u.role==='employee').map(u=>`
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+            <input type="checkbox" id="sg_emp_${u.id}" style="accent-color:var(--accent)"/>
+            ${u.name} <span class="text-xs text-muted2">(${u.dept})</span>
+          </label>`).join('')}
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="pushSharedGoal()">🔗 Push Shared Goal</button>
+  </div>
+  <div class="card mt-16">
+    <div class="card-header"><h3>Existing Shared Goals</h3></div>
+    ${state.goals.filter(g=>g.isShared).length===0?'<div class="text-muted text-sm">No shared goals pushed yet</div>':''}
+    ${state.goals.filter(g=>g.isShared).map(g=>`
+      <div class="goal-item">
+        <div class="goal-header">
+          <div><div class="goal-title-text">${g.title} <span class="badge badge-shared">Shared</span></div><div class="text-xs text-muted2">Pushed by: ${getUser(g.sharedBy)?.name}</div></div>
+          <span class="badge badge-${g.isLocked?'locked':g.status}">${g.status}</span>
+        </div>
+        <div class="goal-meta">
+          <span class="goal-meta-item">${g.thrustArea}</span>
+          <span class="goal-meta-item">Target: ${g.target}</span>
+          <span class="goal-meta-item">Recipient: ${getUser(g.employeeId)?.name}</span>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function pushSharedGoal() {
+  const title = document.getElementById('sg_title').value.trim();
+  const thrust = document.getElementById('sg_thrust').value;
+  const uom = document.getElementById('sg_uom').value;
+  const target = document.getElementById('sg_target').value.trim();
+  const weight = parseInt(document.getElementById('sg_weight').value)||20;
+  const empIds = USERS.filter(u=>u.role==='employee'&&document.getElementById('sg_emp_'+u.id)?.checked).map(u=>u.id);
+  if(!title||!target) { toast('Title and target required','error'); return; }
+  if(empIds.length===0) { toast('Select at least one employee','error'); return; }
+  empIds.forEach(empId=>{
+    const g = {
+      id:uid(), employeeId:empId, title, description:'Shared departmental KPI', thrustArea:thrust, uom, target, targetDate:'2025-12-31', weightage:weight,
+      status:'approved', isLocked:true, isShared:true, sharedBy:currUser().id, approvedBy:currUser().id, approvedAt:new Date().toISOString(), createdAt:new Date().toISOString(), cycleYear:2025,
+      achievements:{ q1:{actual:'',status:'Not Started',comments:[]}, q2:{actual:'',status:'Not Started',comments:[]}, q3:{actual:'',status:'Not Started',comments:[]}, q4:{actual:'',status:'Not Started',comments:[]} }
+    };
+    state.goals.push(g);
+    addNotif(empId,'shared_goal',`A shared goal "${title}" has been pushed to you by HR`);
+  });
+  addAuditLog(`Pushed shared goal "${title}" to ${empIds.length} employees`, []);
+  toast(`Shared goal pushed to ${empIds.length} employees`,'success');
+  showPanel('sharedgoals');
+}
+
+// ============================================================
+// CYCLE CONFIG (Admin)
+// ============================================================
+function renderCycleConfig() {
+  const cycle = state.activeCycle;
+  return `
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>⚙️ Active Cycle: ${cycle.year}</h3></div>
+      <div class="form-group">
+        <label>Active Period</label>
+        <select id="cycle_period" onchange="updateCyclePeriod(this.value)">
+          ${QUARTERS.map(q=>`<option ${cycle.activePeriod===q?'selected':''}>${q}</option>`).join('')}
+        </select>
+      </div>
+      <div style="margin-top:16px">
+        <div class="section-title">Period Windows</div>
+        ${[
+          {label:'Goal Setting', key:'settingOpen', period:'1st May'},
+          {label:'Q1 Check-in', key:'q1Open', period:'July'},
+          {label:'Q2 Check-in', key:'q2Open', period:'October'},
+          {label:'Q3 Check-in', key:'q3Open', period:'January'},
+          {label:'Q4 / Annual', key:'q4Open', period:'March / April'},
+        ].map(p=>`<div class="flex-between" style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div><div style="font-weight:600;font-size:13px">${p.label}</div><div class="text-xs text-muted2">Opens: ${p.period}</div></div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" ${cycle[p.key]?'checked':''} onchange="toggleCycleWindow('${p.key}',this.checked)" style="accent-color:var(--accent);width:16px;height:16px"/>
+            <span class="text-sm">${cycle[p.key]?'<span style="color:var(--success)">Open</span>':'<span style="color:var(--text3)">Closed</span>'}</span>
+          </label>
+        </div>`).join('')}
+      </div>
+      <button class="btn btn-success mt-16" onclick="toast('Cycle configuration saved','success')">💾 Save Configuration</button>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>📅 Cycle Timeline</h3></div>
+      <div class="timeline">
+        ${[
+          {label:'Goal Setting Open',date:'1st May 2025',done:true},
+          {label:'Goal Submission Deadline',date:'31st May 2025',done:true},
+          {label:'Manager Approval Deadline',date:'15th June 2025',done:true},
+          {label:'Q1 Check-in Window Opens',date:'1st July 2025',done:true,active:false},
+          {label:'Q2 Check-in Window Opens',date:'1st October 2025',done:false,active:true},
+          {label:'Q3 Check-in Window Opens',date:'1st January 2026',done:false},
+          {label:'Q4 / Annual Review',date:'March 2026',done:false},
+        ].map(t=>`<div class="tl-item ${t.active?'active':t.done?'done':''}">
+          <div class="tl-date">${t.date}</div>
+          <div class="tl-text">${t.label}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateCyclePeriod(val) { state.activeCycle.activePeriod=val; document.getElementById('activePeriodLabel').textContent=val; toast('Active period updated','success'); }
+function toggleCycleWindow(key, val) { state.activeCycle[key]=val; }
+
+// ============================================================
+// ANALYTICS (Admin)
+// ============================================================
+function renderAnalytics() {
+  const goals = state.goals;
+  const byThrust = {};
+  THRUST_AREAS.forEach(t=>{ byThrust[t]=goals.filter(g=>g.thrustArea===t).length; });
+  const byUom = {};
+  UOM_TYPES.forEach(u=>{ byUom[u]=goals.filter(g=>g.uom===u).length; });
+
+  const depts = ['Engineering','Sales'];
+  const q1Avg = depts.map(d=>{ const dg=goals.filter(g=>getUser(g.employeeId)?.dept===d&&g.isLocked); return {dept:d, avg:calcAvgScore(dg,'q1')||0}; });
+  const q2Avg = depts.map(d=>{ const dg=goals.filter(g=>getUser(g.employeeId)?.dept===d&&g.isLocked); return {dept:d, avg:calcAvgScore(dg,'q2')||0}; });
+
+  return `
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="sc-label">Total Goals</div><div class="sc-value">${goals.length}</div></div>
+    <div class="stat-card green"><div class="sc-label">Approved & Tracked</div><div class="sc-value">${goals.filter(g=>g.isLocked).length}</div></div>
+    <div class="stat-card gold"><div class="sc-label">Avg Q2 Score</div><div class="sc-value">${calcAvgScore(goals,'q2')!==null?calcAvgScore(goals,'q2')+'%':'—'}</div></div>
+    <div class="stat-card purple"><div class="sc-label">Q2 Data Coverage</div><div class="sc-value">${Math.round(goals.filter(g=>g.isLocked&&g.achievements.q2.actual!=='').length/Math.max(goals.filter(g=>g.isLocked).length,1)*100)}%</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>📊 Goals by Thrust Area</h3></div>
+      <div class="chart-bar-wrap">
+        ${Object.entries(byThrust).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{
+          const maxV = Math.max(...Object.values(byThrust));
+          const pct = Math.round((v/maxV)*100);
+          const colors=['var(--accent)','var(--accent2)','var(--accent3)','var(--gold)','var(--warn)'];
+          const col = colors[Object.keys(byThrust).indexOf(k)%colors.length];
+          return `<div class="chart-bar-item">
+            <div class="chart-bar-label">${k.length>18?k.slice(0,18)+'…':k}</div>
+            <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${pct}%;background:${col}">${v}</div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>📈 QoQ Score Trends by Dept</h3></div>
+      <div style="margin-bottom:16px">
+        <div class="text-xs text-muted2 mb-8">Q1 vs Q2 Achievement Scores</div>
+        ${depts.map((d,i)=>{
+          const q1 = q1Avg.find(x=>x.dept===d)?.avg||0;
+          const q2 = q2Avg.find(x=>x.dept===d)?.avg||0;
+          const trend = q2>q1?'↑':'↓';
+          const trendCol = q2>q1?'var(--success)':'var(--danger)';
+          return `<div style="margin-bottom:16px">
+            <div class="flex-between mb-8">
+              <span style="font-weight:600">${d}</span>
+              <span style="color:${trendCol};font-weight:700">${trend} Q1: ${q1}% → Q2: ${q2}%</span>
+            </div>
+            <div class="chart-bar-item">
+              <div class="chart-bar-label">Q1</div>
+              <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${q1}%;background:var(--accent2)">${q1}%</div></div>
+            </div>
+            <div class="chart-bar-item" style="margin-top:4px">
+              <div class="chart-bar-label">Q2</div>
+              <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${q2}%;background:var(--accent3)">${q2}%</div></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <hr class="divider"/>
+      <div class="card-header"><h3>🗂 UoM Distribution</h3></div>
+      <div class="chart-bar-wrap">
+        ${Object.entries(byUom).filter(([,v])=>v>0).map(([k,v])=>{
+          const maxV = Math.max(...Object.values(byUom));
+          return `<div class="chart-bar-item">
+            <div class="chart-bar-label">${k.split('(')[0].trim()}</div>
+            <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.round((v/maxV)*100)}%;background:var(--accent)">${v}</div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>👔 Manager Effectiveness — Check-in Completion</h3></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Manager</th><th>Team Size</th><th>Goals Approved</th><th>Q2 Check-ins Done</th><th>Completion Rate</th></tr></thead>
+      <tbody>
+        ${USERS.filter(u=>u.role==='manager').map(mgr=>{
+          const team = USERS.filter(u=>u.managerId===mgr.id);
+          const mGoals = state.goals.filter(g=>{ const e=getUser(g.employeeId); return e&&e.managerId===mgr.id&&g.isLocked; });
+          const checked = mGoals.filter(g=>g.achievements.q2.managerComment).length;
+          const rate = mGoals.length>0?Math.round((checked/mGoals.length)*100):0;
+          return `<tr>
+            <td style="font-weight:600">${mgr.name}</td>
+            <td>${team.length}</td>
+            <td>${mGoals.length}</td>
+            <td>${checked}</td>
+            <td>
+              <div class="flex-row">
+                <div class="progress-wrap" style="width:100px"><div class="progress-fill ${rate>=80?'good':rate>=50?'':'warn'}" style="width:${rate}%"></div></div>
+                <span style="font-weight:700">${rate}%</span>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>
+  </div>`;
+}
+
+// ============================================================
+// REPORTS (Manager + Admin)
+// ============================================================
+function renderReports() {
+  const goals = isAdmin() ? state.goals : getTeamGoals();
+  const locked = goals.filter(g=>g.isLocked);
+
+  return `
+  <div class="card">
+    <div class="card-header"><h3>📋 Achievement Report</h3><button class="btn btn-success" onclick="exportCSV()">⬇️ Export CSV</button></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Employee</th><th>Dept</th><th>Goal</th><th>Thrust Area</th><th>UoM</th><th>Target</th><th>Q1 Actual</th><th>Q1 Score</th><th>Q2 Actual</th><th>Q2 Score</th><th>Status</th></tr></thead>
+        <tbody>
+          ${locked.map(g=>{
+            const emp=getUser(g.employeeId);
+            return `<tr>
+              <td style="font-weight:600">${emp?.name}</td>
+              <td>${emp?.dept}</td>
+              <td>${g.title}</td>
+              <td class="text-xs">${g.thrustArea}</td>
+              <td class="text-xs">${g.uom.split('(')[0]}</td>
+              <td>${g.uom==='Timeline'?fmtDate(g.target):g.target}</td>
+              <td>${g.achievements.q1.actual||'—'}</td>
+              <td style="color:${(computeScore(g,'q1')||0)>=80?'var(--success)':(computeScore(g,'q1')||0)>=50?'var(--warn)':'var(--text3)'}">${computeScore(g,'q1')!==null?computeScore(g,'q1')+'%':'—'}</td>
+              <td>${g.achievements.q2.actual||'—'}</td>
+              <td style="color:${(computeScore(g,'q2')||0)>=80?'var(--success)':(computeScore(g,'q2')||0)>=50?'var(--warn)':'var(--text3)'}">${computeScore(g,'q2')!==null?computeScore(g,'q2')+'%':'—'}</td>
+              <td><span class="badge badge-${g.achievements.q2.status==='Completed'?'completed':g.achievements.q2.status==='On Track'?'ontrack':'notstarted'}">${g.achievements.q2.status||'Not Started'}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>✅ Q2 Check-in Completion Dashboard</h3></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Employee</th><th>Dept</th><th>Manager</th><th>Goals</th><th>Check-ins Done</th><th>Manager Comment</th></tr></thead>
+      <tbody>
+        ${(isAdmin()?USERS.filter(u=>u.role==='employee'):USERS.filter(u=>u.managerId===currUser().id)).map(emp=>{
+          const empGoals = getMyGoalsFor(emp.id).filter(g=>g.isLocked);
+          const done = empGoals.filter(g=>g.achievements.q2.actual!=='').length;
+          const mgrComment = empGoals.find(g=>g.achievements.q2.managerComment)?.achievements.q2.managerComment;
+          return `<tr>
+            <td style="font-weight:600">${emp.name}</td>
+            <td>${emp.dept}</td>
+            <td>${getUser(emp.managerId)?.name||'—'}</td>
+            <td>${empGoals.length}</td>
+            <td><span class="badge ${done===empGoals.length&&empGoals.length>0?'badge-approved':'badge-pending'}">${done}/${empGoals.length}</span></td>
+            <td class="text-xs text-muted2">${mgrComment?mgrComment.slice(0,50)+'…':'—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>
+  </div>`;
+}
+
+function exportCSV() {
+  const goals = isAdmin() ? state.goals : getTeamGoals();
+  const locked = goals.filter(g=>g.isLocked);
+  const rows = [['Employee','Dept','Goal','Thrust Area','UoM','Target','Q1 Actual','Q1 Score','Q2 Actual','Q2 Score','Q2 Status']];
+  locked.forEach(g=>{
+    const emp=getUser(g.employeeId);
+    rows.push([emp?.name,emp?.dept,g.title,g.thrustArea,g.uom,g.target,g.achievements.q1.actual||'',computeScore(g,'q1')!==null?computeScore(g,'q1')+'%':'',g.achievements.q2.actual||'',computeScore(g,'q2')!==null?computeScore(g,'q2')+'%':'',g.achievements.q2.status||'Not Started']);
+  });
+  const csv = rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'achievement_report_q2_2025.csv';
+  a.click();
+  toast('CSV exported!','success');
+}
+
+// ============================================================
+// AUDIT LOG (Admin)
+// ============================================================
+function renderAuditLog() {
+  return `
+  <div class="card">
+    <div class="card-header"><h3>🔍 Audit Trail</h3><span class="text-xs text-muted2">${state.auditLogs.length} entries</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Goals Affected</th></tr></thead>
+      <tbody>
+        ${state.auditLogs.map(log=>`<tr>
+          <td class="text-xs text-muted2">${fmtDate(log.timestamp)} ${new Date(log.timestamp).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</td>
+          <td style="font-weight:600">${getUser(log.userId)?.name||log.userId}</td>
+          <td>${log.action}</td>
+          <td class="text-xs text-muted2">${log.goalIds.length>0?log.goalIds.length+' goal(s)':'—'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>`;
+}
+
+// ============================================================
+// TIMELINE (Employee)
+// ============================================================
+function renderTimeline() {
+  return `
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h3>📅 2025 Goal Cycle Timeline</h3></div>
+      <div class="timeline">
+        ${[
+          {label:'Phase 1 — Goal Setting Opens',date:'1st May 2025',sub:'Create, submit and get goals approved',done:true},
+          {label:'Goal Submission Deadline',date:'31st May 2025',sub:'All goals must be submitted by this date',done:true},
+          {label:'Manager Approval Deadline',date:'15th June 2025',sub:'Manager must approve/reject goals',done:true},
+          {label:'Q1 Check-in Window',date:'July 2025',sub:'Log Q1 progress against planned targets',done:true},
+          {label:'Q2 Check-in Window',date:'October 2025',sub:'Log Q2 progress — currently active',done:false,active:true},
+          {label:'Q3 Check-in Window',date:'January 2026',sub:'Log Q3 progress against planned targets',done:false},
+          {label:'Q4 / Annual Review',date:'March–April 2026',sub:'Final achievement capture and review',done:false},
+        ].map(t=>`<div class="tl-item ${t.active?'active':t.done?'done':''}">
+          <div class="tl-date">${t.date}</div>
+          <div class="tl-text" style="font-weight:600;color:${t.active?'var(--accent)':t.done?'var(--success)':'var(--text2)'}">${t.label}</div>
+          <div class="text-xs text-muted2">${t.sub}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-header"><h3>📏 Scoring Formulas</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>UoM Type</th><th>Description</th><th>Formula</th></tr></thead>
+          <tbody>
+            <tr><td>Min (Higher Better)</td><td>e.g. Sales Revenue</td><td>Achievement ÷ Target × 100</td></tr>
+            <tr><td>Max (Lower Better)</td><td>e.g. TAT, Cost</td><td>Target ÷ Achievement × 100</td></tr>
+            <tr><td>Timeline</td><td>Date-based completion</td><td>On time → 100%, else penalty</td></tr>
+            <tr><td>Zero</td><td>e.g. Safety incidents</td><td>If 0 → 100%, else 0%</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card mt-16">
+        <div class="card-header"><h3>✅ Goal Validation Rules</h3></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${[
+            {icon:'⚖️', text:'Total weightage across all goals must equal 100%'},
+            {icon:'📏', text:'Minimum weightage per individual goal: 10%'},
+            {icon:'🔢', text:'Maximum number of goals per employee: 8'},
+            {icon:'🔒', text:'Goals are locked after manager approval — no further edits without Admin'},
+            {icon:'🔗', text:'Shared goals: weightage adjustable, title and target are read-only'},
+          ].map(r=>`<div class="flex-row" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+            <span>${r.icon}</span><span class="text-sm">${r.text}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+function renderNotifications() {
+  const notifs = myNotifs();
+  notifs.forEach(n=>n.read=true);
+  renderNotifCount();
+  const icons = { pending_approval:'⏳', approval:'✅', rejection:'❌', checkin:'📝', shared_goal:'🔗', default:'🔔' };
+  const colors = { pending_approval:'rgba(247,161,79,0.1)', approval:'rgba(79,217,122,0.1)', rejection:'rgba(247,95,95,0.1)', checkin:'rgba(79,142,247,0.1)', shared_goal:'rgba(124,92,252,0.1)' };
+
+  return `
+  <div class="card">
+    <div class="card-header"><h3>🔔 Notifications</h3><span class="text-xs text-muted2">${notifs.length} total</span></div>
+    ${notifs.length===0?`<div class="empty-state" style="padding:24px"><div class="es-icon">🔕</div><h4>No Notifications</h4></div>`:''}
+    ${notifs.map(n=>`<div class="notif-item">
+      <div class="notif-icon" style="background:${colors[n.type]||'var(--surface2)'}">${icons[n.type]||icons.default}</div>
+      <div class="notif-info">
+        <div class="notif-title">${n.message}</div>
+        <div class="notif-sub">${fmtDate(n.timestamp)} ${new Date(n.timestamp).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function closeModal() {
+  document.getElementById('modalContainer').innerHTML='';
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+// ============================================================
+// BOOTSTRAP
+// ============================================================
+window.onload = function() {
+  selectRole('employee');
+};
+</script>
+</body>
+</html>
